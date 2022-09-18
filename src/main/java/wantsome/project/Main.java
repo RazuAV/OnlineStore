@@ -6,7 +6,7 @@ import io.javalin.http.staticfiles.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,33 +18,25 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        setup();
-        startWebServer();
-    }
 
-    private static void setup() {
-        //create and configure all needed resources (like db tables, sample data, etc)
-    }
+        //todo: should also initialize db here (create tables, etc)
 
-    private static void startWebServer() {
-        Javalin app = Javalin.create(config -> {
-            config.addStaticFiles("/public", Location.CLASSPATH); //location of static resources (like images, .css ..), relative to /resources dir
-            config.enableDevLogging(); //extra logging, for development/debug
-        }).start();
+        Javalin.create(config -> {
+                    config.addStaticFiles("/static", Location.CLASSPATH); //location of static resources (like images, .css ..), relative to /resources dir
+                    config.enableDevLogging(); //extra logging, for development/debug
+                    config.showJavalinBanner = false;
+                })
+                .get("/", ctx -> ctx.redirect("/main")) //set default page
+                .get("/main", Main::getMainWebPage) //set the rest of the pages...
+                .start();
 
-        //set default page
-        app.get("/", ctx -> ctx.redirect("/main"));
-
-        //configure all routes
-        app.get("/main", Main::getMainWebPage);
-
-        logger.info("Server started: http://localhost:" + app.port());
+        logger.info("Server has started!");
     }
 
     //example of returning a web page
     private static void getMainWebPage(Context ctx) {
         Map<String, Object> model = new HashMap<>();
-        model.put("serverTime", new Date().toString());
+        model.put("serverTime", LocalDateTime.now());
         ctx.render("main.vm", model);
     }
 }
