@@ -24,7 +24,8 @@ dependencies {
     implementation 'org.apache.commons:commons-dbcp2:2.9.0' //for db connection pool
 
     //javalin web framework (newer alternative to spark)
-    implementation 'io.javalin:javalin:4.6.4'
+    implementation 'io.javalin:javalin:5.0.1'
+    implementation 'io.javalin:javalin-rendering:5.0.1'
     implementation 'org.apache.velocity:velocity-engine-core:2.3'
     implementation 'org.apache.velocity.tools:velocity-tools-generic:3.1'
 
@@ -33,7 +34,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4'
 
     //logging
-    implementation 'org.slf4j:slf4j-simple:1.7.36' //for basic logging
+    implementation 'org.slf4j:slf4j-simple:2.0.3' //for basic logging
     //implementation 'ch.qos.logback:logback-classic:1.2.11' //for more complete logging
 
     //for unit tests
