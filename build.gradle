@@ -37,6 +37,9 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:2.0.3' //for basic logging
     //implementation 'ch.qos.logback:logback-classic:1.2.11' //for more complete logging
 
+    //general utility lib (for @Nullable/@NotNull, Preconditions.checkArgument()/checkNotNull(), etc)
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+
     //for unit tests
     testImplementation 'junit:junit:4.13.2'
 }
