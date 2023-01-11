@@ -7,7 +7,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-//Class which control how the application connects to the DB
+//Class which control how the application connects to the DB.
 public class ConnectionManager {
     private static final String DB_FILE = "C:\\Users\\avarv\\OneDrive\\Desktop\\onlineStoreProject\\onlineStore"; // path to the orginal db
 

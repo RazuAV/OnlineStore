@@ -9,7 +9,7 @@ public class DatabaseManager {
 
 
     private static final String CREATE_CLIENTS_SQL = "CREATE TABLE IF NOT EXISTS clients("+
-            "id INTEGER primary key,"+
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
             "email TEXT UNIQUE NOT NULL,"+
             "password TEXT NOT NULL,"+
             "name TEXT NOT NULL,"+
@@ -20,15 +20,15 @@ public class DatabaseManager {
 *
 * */
     private static final String CREATE_PRODUCTS_SQL = "CREATE TABLE IF NOT EXISTS products(\n" +
-            "id INTEGER primary key," +
+            "id INTEGER PRIMARY KEY ," +
             "product_type TEXT CHECK (product_type IN ('PC', 'Gaming', 'Books', 'Phones', 'Fashion', 'Garden', 'House', 'Sport',' Auto', 'Toys', 'Cosmetics')),\n" +
             "description TEXT NOT NULL UNIQUE," +
             "price DOUBLE NOT NULL," +
-            "stock INTEGER);";
+            "stock INTEGER NOT NULL);";
 
 
     private static final String CREATE_ORDERS_SQL = "CREATE TABLE IF NOT EXISTS orders(" +
-            "id INTEGER primary key," +
+            "id INTEGER primary key AUTOINCREMENT," +
             "client_id INTEGER references clients(id)," +
             "fulfill_date DATE," +
             "total_price DOUBLE);";
