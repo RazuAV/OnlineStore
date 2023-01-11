@@ -16,11 +16,10 @@ public class ProductsDao {
     public Optional<ProductsDto> getProductsById(int id) throws SQLException {
         Optional<ProductsDto> productsDtoOptional = Optional.empty();
         String sql = "SELECT id,product_type,description,price,stock FROM products WHERE id = ?";
-        ResultSet productsData;
-        try(PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql)){
+       PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql);
             preparedStatement.setInt(1, id);
-            productsData = preparedStatement.executeQuery();
-        }
+         ResultSet productsData = preparedStatement.executeQuery();
+
         while (productsData.next()){
             ProductsDto productsDto = new ProductsDto(
                     productsData.getInt("id"),
@@ -103,14 +102,13 @@ public class ProductsDao {
     /**
      * Get products by their type.
      * */
-    public Optional<ProductsDto> getProductsByProductType(String product_type) throws SQLException {
-        Optional<ProductsDto> productsDtoOptional = Optional.empty();
+    public List<ProductsDto> getProductsByProductType(String product_type) throws SQLException {
+        List<ProductsDto> allProductsByTypeList = new ArrayList<>();
         String sql = "SELECT id,product_type,description,price,stock FROM products WHERE product_type = ?";
-        ResultSet productsData;
-        try (PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql)) {
+       PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql);
             preparedStatement.setString(1, product_type);
-            productsData = preparedStatement.executeQuery();
-        }
+          ResultSet  productsData = preparedStatement.executeQuery();
+
         while (productsData.next()) {
             ProductsDto productsDto = new ProductsDto(
                     productsData.getInt("id"),
@@ -119,25 +117,25 @@ public class ProductsDao {
                     productsData.getDouble("price"),
                     productsData.getInt("stock")
             );
-            productsDtoOptional = Optional.of(productsDto);
+            allProductsByTypeList.add(productsDto);
         }
-        return productsDtoOptional;
+        return allProductsByTypeList;
 }
 
 /**
  * Updating the stock for an existing product.
  * */
-    public boolean updateStock(ProductsDto productsDto, int stock) throws SQLException{
-        Optional<ProductsDto> searchByProductId = getProductsById(productsDto.getId());
+    public boolean updateStock(int id, int stock) throws SQLException{
+        Optional<ProductsDto> searchByProductId = getProductsById(id);
         if(searchByProductId.isEmpty()){
             System.out.println("Product with this ID was not found!");
             return false;
         }
-        String sql = "UPDATE orders SET stock = ? WHERE id = ?";
+        String sql = "UPDATE products SET stock = ? WHERE id = ?";
         try{
             PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql);
             preparedStatement.setInt(1,stock);
-            preparedStatement.setInt(2,productsDto.getId());
+            preparedStatement.setInt(2,id);
             return  preparedStatement.executeUpdate() > 0;
 
         }catch (SQLException e){

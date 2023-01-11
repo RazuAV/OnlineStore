@@ -72,7 +72,7 @@ public class ProductsDto {
 
     @Override
     public String toString() {
-        return "ProductsDto{" +
+        return "ProductsDto{ " +
                 "id=" + id +
                 ", product_type='" + product_type + '\'' +
                 ", description='" + description + '\'' +

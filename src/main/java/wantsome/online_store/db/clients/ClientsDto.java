@@ -8,7 +8,12 @@ public class ClientsDto {
     private String password;
     private String name;
     private String address;
-
+    public ClientsDto(String email, String password, String name, String address){
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.address = address;
+    }
     public ClientsDto(int id, String email, String password, String name, String address){
         this.id = id;
         this.email = email;
