@@ -1,24 +1,25 @@
 package wantsome.online_store.db.orders;
 
-import wantsome.online_store.db.order_item.OrderItemDao;
-import wantsome.online_store.db.order_item.OrderItemDto;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
-public class OrdersDto  {
+public class OrdersDto {
     private int id;
     private int client_id;
     private Date fulfill_date;
     private double total_price;
 
 
-    public OrdersDto(int id, int client_id){
+    public OrdersDto(int id, int client_id) {
         this.id = id;
         this.client_id = client_id;
     }
+
+    public OrdersDto(int client_id) {
+        this.client_id = client_id;
+    }
+
     public OrdersDto(int id, int client_id, Date fulfill_date, double total_price) {
         this.id = id;
         this.client_id = client_id;
@@ -26,6 +27,12 @@ public class OrdersDto  {
         this.total_price = total_price;
     }
 
+    public OrdersDto(int client_id, Date fulfill_date, double total_price) {
+        this.id = id;
+        this.client_id = client_id;
+        this.fulfill_date = fulfill_date;
+        this.total_price = total_price;
+    }
 
 
     public int getId() {

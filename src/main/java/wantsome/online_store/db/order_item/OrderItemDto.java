@@ -1,10 +1,9 @@
 package wantsome.online_store.db.order_item;
 
-import wantsome.online_store.db.orders.OrdersDto;
 
 import java.util.Objects;
 
-public class OrderItemDto  {
+public class OrderItemDto {
     private int id;
     private int order_id;
     private int product_id;

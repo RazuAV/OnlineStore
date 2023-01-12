@@ -1,8 +1,6 @@
 package wantsome.online_store.db.orders;
 
-import org.sqlite.SQLiteConfig;
-import wantsome.online_store.db.order_item.OrderItemDto;
-import wantsome.online_store.db.products.ProductsDto;
+
 import wantsome.online_store.db.service.ConnectionManager;
 
 import java.sql.*;
@@ -17,102 +15,127 @@ public class OrdersDao {
     public Optional<OrdersDto> getOrdersById(int id) throws SQLException {
         Optional<OrdersDto> ordersDtoOptional = Optional.empty();
         String sql = "SELECT id,client_id,fulfill_date,total_price FROM orders WHERE id = ?";
-        ResultSet ordersData;
-        try (PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            ordersData = preparedStatement.executeQuery();
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet ordersData = ps.executeQuery()) {
+
+                while (ordersData.next()) {
+                    OrdersDto ordersDto = new OrdersDto(
+                            ordersData.getInt("id"),
+                            ordersData.getInt("client_id"),
+                            ordersData.getDate("fulfill_date"),
+                            ordersData.getDouble("total_price")
+                    );
+                    ordersDtoOptional = Optional.of(ordersDto);
+                }
+                return ordersDtoOptional;
+            } catch (SQLException e) {
+                throw new RuntimeException("No order with such id!" + e.getMessage());
+            }
         }
-        while (ordersData.next()) {
-            OrdersDto ordersDto = new OrdersDto(
-                    ordersData.getInt("id"),
-                    ordersData.getInt("client_id"),
-                    ordersData.getDate("fulfill_date"),
-                    ordersData.getDouble("total_price")
-            );
-            ordersDtoOptional = Optional.of(ordersDto);
-        }
-        return ordersDtoOptional;
     }
 
     /**
-     * Get orders for current client
+     * Get current orders for  client
+     * Current orders are those which don't have a fulfilled date;
      */
-    public Optional<OrdersDto> getOrdersByClientId(int clientId) throws SQLException {
-        Optional<OrdersDto> ordersDtoOptional = Optional.empty();
-        String sql = "SELECT orders.id,client_id,fulfill_date,total_price FROM orders,clients WHERE orders.client_id = clients.id AND clients.id = ?";
-        ResultSet ordersData;
-        try (PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql)) {
-            preparedStatement.setInt(1, clientId);
-            ordersData = preparedStatement.executeQuery();
+    public List<OrdersDto> getCurrentForClient(int clientId) throws SQLException {
+        String sql = "SELECT orders.id,client_id,fulfill_date,total_price" +
+                " FROM orders,clients WHERE orders.client_id = clients.id " +
+                "AND clients.id = ? AND fulfill_date IS NULL;";
+
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, clientId);
+            try (ResultSet ordersData = ps.executeQuery()) {
+                List<OrdersDto> currentOrdersForClient = new ArrayList<>();
+                while (ordersData.next()) {
+                    OrdersDto ordersDto = new OrdersDto(
+                            ordersData.getInt("id"),
+                            ordersData.getInt("client_id"),
+                            ordersData.getDate("fulfill_date"),
+                            ordersData.getDouble("total_price")
+                    );
+                    currentOrdersForClient.add(ordersDto);
+                }
+                return currentOrdersForClient;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("No orders for this clientId!" + e.getMessage());
         }
-        while (ordersData.next()) {
-            OrdersDto ordersDto = new OrdersDto(
-                    ordersData.getInt("id"),
-                    ordersData.getInt("client_id"),
-                    ordersData.getDate("fulfill_date"),
-                    ordersData.getDouble("total_price")
-            );
-            ordersDtoOptional = Optional.of(ordersDto);
-        }
-        return ordersDtoOptional;
     }
 
     /**
      * Adding a new order
      */
     public boolean addOrder(OrdersDto order) throws SQLException {
-        Optional<OrdersDto> searchByProductId = getOrdersById(order.getId());
-        if (searchByProductId.isPresent()) {
-            System.out.println("This order already exists");
-            return false;
+        String sql = "INSERT INTO orders VALUES(?,?,?,?)";
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(2, order.getClient_id());
+            ps.setDate(3, (Date) order.getFulfill_date());
+            ps.setDouble(4, order.getTotal_price());
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert new order!" + e.getMessage());
         }
-        String sql = "INSERT INTO products VALUES(?,?,?,?)";
-        PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql);
-        preparedStatement.setInt(1, order.getId());
-        preparedStatement.setInt(2, order.getClient_id());
-        preparedStatement.setDate(3, (Date) order.getFulfill_date());
-        preparedStatement.setDouble(4, order.getTotal_price());
-        preparedStatement.executeUpdate();
-        return true;
     }
 
     /**
      * An order is closed when it has a fulfill_date and a total price.
      */
 
-    public boolean closeOrder(OrdersDto ordersDto) throws SQLException {
-        Optional<OrdersDto> searchByProductId = getOrdersById(ordersDto.getId());
+    public boolean closeOrder(int orderId) throws SQLException {
+        Optional<OrdersDto> searchByProductId = getOrdersById(orderId);
         if (!searchByProductId.isPresent()) {
             System.out.println("No order with this ID found!");
             return false;
         }
-        String sql = "UPDATE orders\n" +
-                "SET total_price = (SELECT SUM(price)\n" +
-                "FROM products  JOIN order_item WHERE products.id = order_item.product_id AND order_item.order_id = ?),fulfill_date = DATE('now');";
-        PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql);
-        preparedStatement.setInt(1, ordersDto.getId());
-        preparedStatement.executeUpdate();
-        return true;
+
+        String sql = "UPDATE orders " +
+                "SET fulfill_date = DATE('now'), total_price = (SELECT SUM(products.price * order_item.quantity) FROM order_item " +
+                "JOIN products on order_item.product_id = products.id " +
+                "WHERE order_item.order_id = orders.id) " +
+                "WHERE orders.id = ?  ";
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException("Order was not closed!" + e.getMessage());
+        }
     }
 
-    public Optional<OrdersDto> getallClosedByClientId(OrdersDto orders) throws SQLException{
-        Optional<OrdersDto> getallClosedByClientId = getOrdersById(orders.getId());
+    /**
+     * List of closed orders for a specific client id
+     */
+    public List<OrdersDto> getallClosedByClientId(int clientId) throws SQLException {
+        String sql = "SELECT id, client_id, fulfill_date, total_price\n" +
+                "FROM orders \n" +
+                "WHERE fulfill_date IS NOT NULL AND client_id = ? ;";
 
-   String sql = "SELECT orders.id,client_id,fulfill_date,total_price FROM orders,clients WHERE orders.client_id = clients.id AND orders.id = ? AND fulfill_date IS NOT NULL AND price IS NOT NULL";
-        ResultSet ordersData;
-        try (PreparedStatement preparedStatement = ConnectionManager.getConnection().prepareStatement(sql)) {
-            preparedStatement.setInt(1, orders.getId());
-            ordersData = preparedStatement.executeQuery();
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, clientId);
+            try (ResultSet ordersData = ps.executeQuery()) {
+                List<OrdersDto> ordersClosedByClientId = new ArrayList<>();
+                while (ordersData.next()) {
+                    OrdersDto ordersDto = new OrdersDto(
+                            ordersData.getInt("id"),
+                            ordersData.getInt("client_id"),
+                            ordersData.getDate("fulfill_date"),
+                            ordersData.getDouble("total_price")
+                    );
+                    ordersClosedByClientId.add(ordersDto);
+                }
+                return ordersClosedByClientId;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("No orders closed for this ID" + e.getMessage());
         }
-        while (ordersData.next()) {
-            OrdersDto ordersDto = new OrdersDto(
-                    ordersData.getInt("id"),
-                    ordersData.getInt("client_id"),
-                    ordersData.getDate("fulfill_date"),
-                    ordersData.getDouble("total_price")
-            );
-            getallClosedByClientId = Optional.of(ordersDto);
-        }
-        return getallClosedByClientId;
     }
 }
