@@ -77,7 +77,7 @@ public class ProductsDto {
                 ", product_type='" + product_type + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
-                ", stock=" + stock +
+                ", stock= " + stock +
                 '}';
     }
 }

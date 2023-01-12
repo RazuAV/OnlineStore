@@ -8,29 +8,35 @@ public class ClientsDto {
     private String password;
     private String name;
     private String address;
-    public ClientsDto(String email, String password, String name, String address){
+
+    public ClientsDto(String email, String password, String name, String address) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.address = address;
     }
-    public ClientsDto(int id, String email, String password, String name, String address){
+
+    public ClientsDto(int id, String email, String password, String name, String address) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
         this.address = address;
     }
-    public int getId(){
+
+    public int getId() {
         return id;
     }
-    public void setId(int id ){
+
+    public void setId(int id) {
         this.id = id;
     }
-    public String getEmail(){
+
+    public String getEmail() {
         return email;
     }
-    public void setEmail(String email){
+
+    public void setEmail(String email) {
         this.email = email;
     }
 
