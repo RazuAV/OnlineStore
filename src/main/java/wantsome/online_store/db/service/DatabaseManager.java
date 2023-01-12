@@ -8,17 +8,14 @@ import java.sql.Statement;
 public class DatabaseManager {
 
 
-    private static final String CREATE_CLIENTS_SQL = "CREATE TABLE IF NOT EXISTS clients("+
-            "id INTEGER PRIMARY KEY AUTOINCREMENT,"+
-            "email TEXT UNIQUE NOT NULL,"+
-            "password TEXT NOT NULL,"+
-            "name TEXT NOT NULL,"+
+    private static final String CREATE_CLIENTS_SQL = "CREATE TABLE IF NOT EXISTS clients(" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "email TEXT UNIQUE NOT NULL," +
+            "password TEXT NOT NULL," +
+            "name TEXT NOT NULL," +
             "address TEXT);";
 
-/*
-* For product_type I used some default types; enums.
-*
-* */
+    /** For product_type I used some default types; enums. */
     private static final String CREATE_PRODUCTS_SQL = "CREATE TABLE IF NOT EXISTS products(\n" +
             "id INTEGER PRIMARY KEY ," +
             "product_type TEXT CHECK (product_type IN ('PC', 'Gaming', 'Books', 'Phones', 'Fashion', 'Garden', 'House', 'Sport',' Auto', 'Toys', 'Cosmetics')),\n" +
@@ -35,7 +32,7 @@ public class DatabaseManager {
 
 
     private static final String CREATE_ORDER_ITEM_SQL = "CREATE TABLE order_item(" +
-            "id INTEGER primary key," +
+            "id INTEGER primary key AUTOINCREMENT," +
             "order_id INTEGER references orders(id)," +
             "product_id INTEGER references products(id)," +
             "quantity INTEGER);";
