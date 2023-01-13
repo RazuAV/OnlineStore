@@ -14,9 +14,11 @@ public class ClientsDao {
     public Optional<ClientsDto> getClientsByEmail(String email) throws SQLException {
         Optional<ClientsDto> clientsDtoOptional = Optional.empty();
         String sql = "SELECT id,email,password,name,address FROM clients WHERE email = ?";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
+
             try (ResultSet clientsData = ps.executeQuery()) {
 
                 while (clientsData.next()) {
@@ -32,17 +34,20 @@ public class ClientsDao {
             return clientsDtoOptional;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed getting clients by email: " + email + e.getMessage());
+            throw new RuntimeException("Failed getting clients by email: " + email + " " + e.getMessage());
         }
     }
 
     public Optional<ClientsDto> getClientsById(int id) throws SQLException {
         Optional<ClientsDto> clientsDtoOptional = Optional.empty();
         String sql = "SELECT id,email,password,name,address FROM clients WHERE id = ?";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
+
             try (ResultSet clientsData = ps.executeQuery()) {
+
                 while (clientsData.next()) {
                     ClientsDto clientsDto = new ClientsDto(
                             clientsData.getInt("id"),
@@ -54,7 +59,7 @@ public class ClientsDao {
                 }
                 return clientsDtoOptional;
             } catch (SQLException e) {
-                throw new RuntimeException("Error getting clients by id: " + id + e.getMessage());
+                throw new RuntimeException("Error getting clients by id: " + id + " " + e.getMessage());
             }
         }
 
@@ -66,6 +71,7 @@ public class ClientsDao {
      */
     public boolean addClient(ClientsDto client) throws SQLException {
         Optional<ClientsDto> searchByEmail = getClientsByEmail(client.getEmail());
+
         if (searchByEmail.isPresent()) {
             System.out.println("This email is already registered!");
             return false;
@@ -81,7 +87,7 @@ public class ClientsDao {
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to register client " + e.getMessage());
+            throw new RuntimeException("Failed to register client " + " " + e.getMessage());
         }
     }
 
@@ -91,11 +97,13 @@ public class ClientsDao {
     public boolean clientLogin(String email, String password) {
         boolean isUser = false;
         String sql = "SELECT email, password FROM clients WHERE email = ? AND password = ?";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, password);
             ResultSet resultSet = ps.executeQuery();
+
             if (resultSet.next()) {
                 isUser = true;
                 System.out.println("You are successfully logged in!");
@@ -103,7 +111,7 @@ public class ClientsDao {
                 System.out.println("Wrong email or password!");
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to login " + e.getMessage());
+            throw new RuntimeException("Failed to login " + " " + e.getMessage());
         }
         return isUser;
     }

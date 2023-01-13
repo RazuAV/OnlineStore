@@ -9,14 +9,16 @@ import java.util.Optional;
 
 public class ProductsDao {
     /**
-     * Get products by Id and Description to veirify if the product exists or not.
+     * Get products by Id and Description to verify if the product exists or not.
      */
     public Optional<ProductsDto> getProductsById(int id) throws SQLException {
         Optional<ProductsDto> productsDtoOptional = Optional.empty();
         String sql = "SELECT id,product_type,description,price,stock FROM products WHERE id = ?";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
+
             try (ResultSet productsData = ps.executeQuery()) {
 
                 while (productsData.next()) {
@@ -30,7 +32,7 @@ public class ProductsDao {
                 }
                 return productsDtoOptional;
             } catch (SQLException e) {
-                throw new RuntimeException("Failed getting products by id: " + id + e.getMessage());
+                throw new RuntimeException("Failed getting products by id: " + id + " " + e.getMessage());
             }
         }
     }
@@ -38,9 +40,11 @@ public class ProductsDao {
     public Optional<ProductsDto> getProductsByDescription(String description) throws SQLException {
         Optional<ProductsDto> productsDtoOptional = Optional.empty();
         String sql = "SELECT id,product_type,description,price,stock FROM products WHERE description = ?";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, description);
+
             try (ResultSet productsData = ps.executeQuery()) {
 
                 while (productsData.next()) {
@@ -54,7 +58,7 @@ public class ProductsDao {
                 }
                 return productsDtoOptional;
             } catch (SQLException e) {
-                throw new RuntimeException("Failed getting products by description: " + description + e.getMessage());
+                throw new RuntimeException("Failed getting products by description: " + description + " " + e.getMessage());
             }
         }
     }
@@ -65,16 +69,20 @@ public class ProductsDao {
 
     public boolean addProduct(ProductsDto product) throws SQLException {
         Optional<ProductsDto> searchById = getProductsById(product.getId());
+
         if (!searchById.isEmpty()) {
             System.out.println("This id is already registered!");
             return false;
         }
+
         Optional<ProductsDto> searchByDescription = getProductsByDescription(product.getDescription());
+
         if (searchByDescription.isPresent()) {
             System.out.println("This product already exists");
             return false;
         }
         String sql = "INSERT INTO products VALUES(?,?,?,?,?)";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, product.getId());
@@ -85,7 +93,7 @@ public class ProductsDao {
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to add product " + e.getMessage());
+            throw new RuntimeException("Failed to add product " + " " + e.getMessage());
         }
     }
 
@@ -96,10 +104,13 @@ public class ProductsDao {
     public List<ProductsDto> getAllProducts() throws SQLException {
 
         String sql = "SELECT id,product_type,description,price,stock FROM products";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet allProducts = ps.executeQuery()) {
+
             List<ProductsDto> allProductsList = new ArrayList<>();
+
             while (allProducts.next()) {
                 ProductsDto currentProduct = new ProductsDto(
                         allProducts.getInt("id"),
@@ -112,7 +123,7 @@ public class ProductsDao {
             }
             return allProductsList;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get list of products" + e.getMessage());
+            throw new RuntimeException("Failed to get list of products" + " " + e.getMessage());
         }
     }
 
@@ -122,11 +133,14 @@ public class ProductsDao {
     public List<ProductsDto> getProductsByProductType(String product_type) throws SQLException {
 
         String sql = "SELECT id,product_type,description,price,stock FROM products WHERE product_type = ?";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, product_type);
+
             try (ResultSet allProductsByType = ps.executeQuery()) {
                 List<ProductsDto> allProductsByTypeList = new ArrayList<>();
+
                 while (allProductsByType.next()) {
                     ProductsDto currentProduct = new ProductsDto(
                             allProductsByType.getInt("id"),
@@ -140,7 +154,7 @@ public class ProductsDao {
                 return allProductsByTypeList;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get list of products" + e.getMessage());
+            throw new RuntimeException("Failed to get list of products" + " " + e.getMessage());
         }
     }
 
@@ -152,20 +166,20 @@ public class ProductsDao {
      */
     public boolean updateStock(int id) throws SQLException {
         Optional<ProductsDto> searchByProductId = getProductsById(id);
+
         if (searchByProductId.isEmpty()) {
             System.out.println("Product with this ID was not found!");
             return false;
         }
         String sql = "UPDATE products SET stock = stock - (SELECT quantity FROM order_item WHERE product_id = products.id) WHERE id = (SELECT product_id FROM order_item) AND id = ?";
-        try (
-                Connection conn = ConnectionManager.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException("Error updating stock");
+            throw new RuntimeException("Error updating stock!" + " " + e.getMessage());
         }
     }
 
