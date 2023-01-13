@@ -72,7 +72,9 @@ public class OrdersDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrdersDto ordersDto = (OrdersDto) o;
-        return id == ordersDto.id && client_id == ordersDto.client_id && Double.compare(ordersDto.total_price, total_price) == 0 && Objects.equals(fulfill_date, ordersDto.fulfill_date);
+        return id == ordersDto.id && client_id == ordersDto.client_id
+                && Double.compare(ordersDto.total_price, total_price) == 0
+                && Objects.equals(fulfill_date, ordersDto.fulfill_date);
     }
 
     @Override

@@ -15,9 +15,11 @@ public class OrdersDao {
     public Optional<OrdersDto> getOrdersById(int id) throws SQLException {
         Optional<OrdersDto> ordersDtoOptional = Optional.empty();
         String sql = "SELECT id,client_id,fulfill_date,total_price FROM orders WHERE id = ?";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
+
             try (ResultSet ordersData = ps.executeQuery()) {
 
                 while (ordersData.next()) {
@@ -31,7 +33,7 @@ public class OrdersDao {
                 }
                 return ordersDtoOptional;
             } catch (SQLException e) {
-                throw new RuntimeException("No order with such id!" + e.getMessage());
+                throw new RuntimeException("No order with such id!" + " " + e.getMessage());
             }
         }
     }
@@ -48,8 +50,10 @@ public class OrdersDao {
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, clientId);
+
             try (ResultSet ordersData = ps.executeQuery()) {
                 List<OrdersDto> currentOrdersForClient = new ArrayList<>();
+
                 while (ordersData.next()) {
                     OrdersDto ordersDto = new OrdersDto(
                             ordersData.getInt("id"),
@@ -62,7 +66,7 @@ public class OrdersDao {
                 return currentOrdersForClient;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("No orders for this clientId!" + e.getMessage());
+            throw new RuntimeException("No orders for this clientId!" + " " + e.getMessage());
         }
     }
 
@@ -70,7 +74,9 @@ public class OrdersDao {
      * Adding a new order
      */
     public boolean addOrder(OrdersDto order) throws SQLException {
+
         String sql = "INSERT INTO orders VALUES(?,?,?,?)";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -80,7 +86,7 @@ public class OrdersDao {
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to insert new order!" + e.getMessage());
+            throw new RuntimeException("Failed to insert new order!" + " " + e.getMessage());
         }
     }
 
@@ -90,6 +96,7 @@ public class OrdersDao {
 
     public boolean closeOrder(int orderId) throws SQLException {
         Optional<OrdersDto> searchByProductId = getOrdersById(orderId);
+
         if (!searchByProductId.isPresent()) {
             System.out.println("No order with this ID found!");
             return false;
@@ -100,6 +107,7 @@ public class OrdersDao {
                 "JOIN products on order_item.product_id = products.id " +
                 "WHERE order_item.order_id = orders.id) " +
                 "WHERE orders.id = ?  ";
+
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, orderId);
@@ -121,8 +129,10 @@ public class OrdersDao {
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, clientId);
+
             try (ResultSet ordersData = ps.executeQuery()) {
                 List<OrdersDto> ordersClosedByClientId = new ArrayList<>();
+
                 while (ordersData.next()) {
                     OrdersDto ordersDto = new OrdersDto(
                             ordersData.getInt("id"),
@@ -135,7 +145,7 @@ public class OrdersDao {
                 return ordersClosedByClientId;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("No orders closed for this ID" + e.getMessage());
+            throw new RuntimeException("No orders closed for this ID" + " " + e.getMessage());
         }
     }
 }
