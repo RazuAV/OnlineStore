@@ -11,7 +11,7 @@ public class ClientsDao {
     /**
      * Helping methods to verify if the user is registered or not
      */
-    public Optional<ClientsDto> getClientsByEmail(String email) throws SQLException {
+    public static Optional<ClientsDto> getClientsByEmail(String email) throws SQLException {
         Optional<ClientsDto> clientsDtoOptional = Optional.empty();
         String sql = "SELECT id,email,password,name,address FROM clients WHERE email = ?";
 
@@ -38,7 +38,7 @@ public class ClientsDao {
         }
     }
 
-    public Optional<ClientsDto> getClientsById(int id) throws SQLException {
+    public static Optional<ClientsDto> getClientsById(int id) throws SQLException {
         Optional<ClientsDto> clientsDtoOptional = Optional.empty();
         String sql = "SELECT id,email,password,name,address FROM clients WHERE id = ?";
 
@@ -69,7 +69,7 @@ public class ClientsDao {
      * This method is used for registering.
      * If the email is not found, the user will be registered and added to the DB
      */
-    public boolean addClient(ClientsDto client) throws SQLException {
+    public static boolean addClient(ClientsDto client) throws SQLException {
         Optional<ClientsDto> searchByEmail = getClientsByEmail(client.getEmail());
 
         if (searchByEmail.isPresent()) {
@@ -94,7 +94,7 @@ public class ClientsDao {
     /**
      * This will verify if the user is logged in or not according to the DB
      */
-    public boolean clientLogin(String email, String password) {
+    public static boolean clientLogin(String email, String password) {
         boolean isUser = false;
         String sql = "SELECT email, password FROM clients WHERE email = ? AND password = ?";
 

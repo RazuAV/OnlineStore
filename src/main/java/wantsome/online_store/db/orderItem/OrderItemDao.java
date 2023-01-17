@@ -1,6 +1,7 @@
-package wantsome.online_store.db.order_item;
+package wantsome.online_store.db.orderItem;
 
 import wantsome.online_store.db.service.ConnectionManager;
+
 
 import java.sql.*;
 import java.util.Optional;
@@ -9,10 +10,10 @@ public class OrderItemDao {
     /**
      * Get items ordered for a specific id
      */
-    public Optional<OrderItemDto> getOrderItemById(int id) throws SQLException {
+    public static Optional<OrderItemDto> getOrderItemById(int id) throws SQLException {
         Optional<OrderItemDto> orderItemDtoOptional = Optional.empty();
 
-        String sql = "SELECT id,order_id,product_id,quantity FROM order_item WHERE id = ?";
+        String sql = "SELECT id,orderId,productId,quantity FROM orderItem WHERE id = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -23,8 +24,8 @@ public class OrderItemDao {
                 while (orderItemData.next()) {
                     OrderItemDto orderItemDto = new OrderItemDto(
                             orderItemData.getInt("id"),
-                            orderItemData.getInt("order_id"),
-                            orderItemData.getInt("product_id"),
+                            orderItemData.getInt("orderId"),
+                            orderItemData.getInt("productId"),
                             orderItemData.getInt("quantity")
                     );
                     orderItemDtoOptional = Optional.of(orderItemDto);
@@ -37,24 +38,46 @@ public class OrderItemDao {
     }
 
     /**
-     * Add a new order item
+     * Helping method to get the stock for a specific product
      */
-    public boolean insertOrderItem(OrderItemDto orderItem) throws SQLException {
-        Optional<OrderItemDto> getOrderItemById = getOrderItemById(orderItem.getId());
+    public static int getStockForAProduct(OrderItemDto orderItemDto) throws SQLException {
 
-        if (getOrderItemById.isPresent()) {
-            return false;
-        }
-
-        String sql = "INSERT INTO order_item VALUES (?, ?, ?, ?)";
+        int stock = 0;
+        String sql = "SELECT stock from products WHERE id = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, orderItem.getId());
-            ps.setInt(2, orderItem.getOrder_id());
-            ps.setInt(3, orderItem.getProduct_id());
+            ps.setInt(1, orderItemDto.getproductId());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                stock = rs.getInt("stock");
+            }
+            return stock;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get stock: " + " " + e.getMessage());
+        }
+    }
+
+    /**
+     * Add a new order item only if the stock is not 0 or if its >= quantity
+     */
+    public static boolean insertOrderItem(OrderItemDto orderItem) throws SQLException {
+
+        if (getStockForAProduct(orderItem) < orderItem.getQuantity() || getStockForAProduct(orderItem) == 0) {
+            System.out.println("Not enough products in stock!");
+            return false;
+        }
+
+        String sql = "INSERT INTO orderItem VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(2, orderItem.getorderId());
+            ps.setInt(3, orderItem.getproductId());
             ps.setInt(4, orderItem.getQuantity());
             ps.executeUpdate();
+
             return true;
         } catch (SQLException e) {
             throw new SQLException("Item could not be inserted!" + " " + e.getMessage());
@@ -64,9 +87,9 @@ public class OrderItemDao {
     /**
      * Delete item from order
      */
-    public boolean deleteItem(int id) throws SQLException {
+    public static boolean deleteItem(int id) {
 
-        String sql = "DELETE FROM order_item where id = ?";
+        String sql = "DELETE FROM orderItem where id = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -82,9 +105,9 @@ public class OrderItemDao {
     /**
      * Update quantity for a specific order item
      */
-    public boolean updateQuantity(int id, int quantity) throws SQLException {
+    public static boolean updateQuantity(int id, int quantity) throws SQLException {
 
-        String sql = "UPDATE order_item SET quantity = ? WHERE id = ?";
+        String sql = "UPDATE orderItem SET quantity = ? WHERE id = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

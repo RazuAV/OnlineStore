@@ -12,9 +12,9 @@ public class OrdersDao {
     /**
      * Get orders by their ID
      */
-    public Optional<OrdersDto> getOrdersById(int id) throws SQLException {
+    public static Optional<OrdersDto> getOrdersById(int id) throws SQLException {
         Optional<OrdersDto> ordersDtoOptional = Optional.empty();
-        String sql = "SELECT id,client_id,fulfill_date,total_price FROM orders WHERE id = ?";
+        String sql = "SELECT id,clientId,fullFillDate,totalPrice FROM orders WHERE id = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -25,9 +25,9 @@ public class OrdersDao {
                 while (ordersData.next()) {
                     OrdersDto ordersDto = new OrdersDto(
                             ordersData.getInt("id"),
-                            ordersData.getInt("client_id"),
-                            ordersData.getDate("fulfill_date"),
-                            ordersData.getDouble("total_price")
+                            ordersData.getInt("clientId"),
+                            ordersData.getDate("fullFillDate"),
+                            ordersData.getDouble("totalPrice")
                     );
                     ordersDtoOptional = Optional.of(ordersDto);
                 }
@@ -42,10 +42,10 @@ public class OrdersDao {
      * Get current orders for  client
      * Current orders are those which don't have a fulfilled date;
      */
-    public List<OrdersDto> getCurrentForClient(int clientId) throws SQLException {
-        String sql = "SELECT orders.id,client_id,fulfill_date,total_price" +
-                " FROM orders,clients WHERE orders.client_id = clients.id " +
-                "AND clients.id = ? AND fulfill_date IS NULL;";
+    public static List<OrdersDto> getCurrentForClient(int clientId) throws SQLException {
+        String sql = "SELECT orders.id,clientId,fullFillDate,totalPrice" +
+                " FROM orders,clients WHERE orders.clientId = clients.id " +
+                "AND clients.id = ? AND fullFillDate IS NULL;";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -57,9 +57,9 @@ public class OrdersDao {
                 while (ordersData.next()) {
                     OrdersDto ordersDto = new OrdersDto(
                             ordersData.getInt("id"),
-                            ordersData.getInt("client_id"),
-                            ordersData.getDate("fulfill_date"),
-                            ordersData.getDouble("total_price")
+                            ordersData.getInt("clientId"),
+                            ordersData.getDate("fullFillDate"),
+                            ordersData.getDouble("totalPrice")
                     );
                     currentOrdersForClient.add(ordersDto);
                 }
@@ -73,16 +73,16 @@ public class OrdersDao {
     /**
      * Adding a new order
      */
-    public boolean addOrder(OrdersDto order) throws SQLException {
+    public static boolean addOrder(OrdersDto order) throws SQLException {
 
         String sql = "INSERT INTO orders VALUES(?,?,?,?)";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(2, order.getClient_id());
-            ps.setDate(3, (Date) order.getFulfill_date());
-            ps.setDouble(4, order.getTotal_price());
+            ps.setInt(2, order.getclientId());
+            ps.setDate(3, (Date) order.getfullFillDate());
+            ps.setDouble(4, order.gettotalPrice());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -91,21 +91,45 @@ public class OrdersDao {
     }
 
     /**
-     * An order is closed when it has a fulfill_date and a total price.
+     * Helping method to verify if an order was already closed.
+     */
+    public static Date searchForDate(int orderId) throws SQLException {
+
+        Date date;
+        String sql = " SELECT fullFillDate from orders where id = ?";
+
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                date = rs.getDate("fullFillDate");
+            }
+            return date;
+        } catch (SQLException e) {
+            throw new SQLException("Error getting date for this orderId!" + " " + e.getMessage());
+        }
+    }
+
+    /**
+     * An order is closed when it has a fullFillDate and a total price.
      */
 
-    public boolean closeOrder(int orderId) throws SQLException {
+    public static boolean closeOrder(int orderId) throws SQLException {
         Optional<OrdersDto> searchByProductId = getOrdersById(orderId);
 
         if (!searchByProductId.isPresent()) {
             System.out.println("No order with this ID found!");
             return false;
         }
-
+        if (searchForDate(orderId) != null) {
+            System.out.println("Order was already closed");
+            return false;
+        }
         String sql = "UPDATE orders " +
-                "SET fulfill_date = DATE('now'), total_price = (SELECT SUM(products.price * order_item.quantity) FROM order_item " +
-                "JOIN products on order_item.product_id = products.id " +
-                "WHERE order_item.order_id = orders.id) " +
+                "SET fullFillDate = DATE('now'), totalPrice = (SELECT SUM(products.price * orderItem.quantity) FROM orderItem " +
+                "JOIN products on orderItem.productId = products.id " +
+                "WHERE orderItem.orderId = orders.id) " +
                 "WHERE orders.id = ?  ";
 
         try (Connection conn = ConnectionManager.getConnection();
@@ -121,10 +145,10 @@ public class OrdersDao {
     /**
      * List of closed orders for a specific client id
      */
-    public List<OrdersDto> getallClosedByClientId(int clientId) throws SQLException {
-        String sql = "SELECT id, client_id, fulfill_date, total_price\n" +
+    public static List<OrdersDto> getallClosedByClientId(int clientId) throws SQLException {
+        String sql = "SELECT id, clientId, fullFillDate, totalPrice\n" +
                 "FROM orders \n" +
-                "WHERE fulfill_date IS NOT NULL AND client_id = ? ;";
+                "WHERE fullFillDate IS NOT NULL AND clientId = ? ;";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -136,9 +160,9 @@ public class OrdersDao {
                 while (ordersData.next()) {
                     OrdersDto ordersDto = new OrdersDto(
                             ordersData.getInt("id"),
-                            ordersData.getInt("client_id"),
-                            ordersData.getDate("fulfill_date"),
-                            ordersData.getDouble("total_price")
+                            ordersData.getInt("clientId"),
+                            ordersData.getDate("fullFillDate"),
+                            ordersData.getDouble("totalPrice")
                     );
                     ordersClosedByClientId.add(ordersDto);
                 }

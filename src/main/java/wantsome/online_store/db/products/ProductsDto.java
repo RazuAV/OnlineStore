@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public class ProductsDto {
     private int id;
-    private String product_type;
+    private ProductType productType;
     private String description;
     private double price;
     private int stock;
 
-    public ProductsDto(int id, String product_type, String description, double price, int stock) {
+    public ProductsDto(int id, ProductType productType, String description, double price, int stock) {
         this.id = id;
-        this.product_type = product_type;
+        this.productType = productType;
         this.description = description;
         this.price = price;
         this.stock = stock;
@@ -25,12 +25,12 @@ public class ProductsDto {
         this.id = id;
     }
 
-    public String getProduct_type() {
-        return product_type;
+    public ProductType getproductType() {
+        return productType;
     }
 
-    public void setProduct_type(String product_type) {
-        this.product_type = product_type;
+    public void setproductType(ProductType productType) {
+        this.productType = productType;
     }
 
     public String getDescription() {
@@ -62,19 +62,19 @@ public class ProductsDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductsDto that = (ProductsDto) o;
-        return id == that.id && Double.compare(that.price, price) == 0 && stock == that.stock && Objects.equals(product_type, that.product_type) && Objects.equals(description, that.description);
+        return id == that.id && Double.compare(that.price, price) == 0 && stock == that.stock && Objects.equals(productType, that.productType) && Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, product_type, description, price, stock);
+        return Objects.hash(id, productType, description, price, stock);
     }
 
     @Override
     public String toString() {
         return "ProductsDto{ " +
                 "id=" + id +
-                ", product_type='" + product_type + '\'' +
+                ", productType='" + productType + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", stock= " + stock +
