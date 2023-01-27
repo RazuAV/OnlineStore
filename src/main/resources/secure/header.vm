@@ -1,0 +1,12 @@
+
+
+<div class="header" >
+  <button type="button" class="menu-item #if($page == 'shoppage') menu-item #end " onclick="location.href='/secure/shoppage'" style="margin-left: 20px"><h2>Shop</h2></button>
+
+
+  <button type="button" class="menu-item"><h2>Profile</h2> </button>
+
+
+
+  <button type="button" class="menu-item"><h2>Cart</h2>  </button>
+</div>

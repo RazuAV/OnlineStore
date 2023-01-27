@@ -65,53 +65,65 @@ public class DatabaseManager {
         }
     }
 
-    public static void createDatabase() throws SQLException {
-        try {
-            createMissingTables();
-            insertSomeClients();
-            insertProducts();
-            insertSomeOrders();
-            insertSomeOrderItem();
-        } catch (SQLException e) {
-            throw new SQLException("Error creating database: " + " " + e.getMessage());
-        }
-
+    public static void createDatabase() {
+        createMissingTables();
+        insertSomeClients();
+        insertProducts();
+        insertSomeOrders();
+        insertSomeOrderItem();
     }
+
 
     /**
      * Methods used for inserting some data when the DB is created.
      */
-    public static void insertSomeClients() throws SQLException {
-        ClientsDao.addClient(new ClientsDto("email@1.com", "parola1", "nume1", "adresa1"));
-        ClientsDao.addClient(new ClientsDto("email@2.com", "parola2", "nume2", "adresa2"));
-        ClientsDao.addClient(new ClientsDto("email@3.com", "parola3", "nume3", "adresa3"));
-        ClientsDao.addClient(new ClientsDto("email@4.com", "parola4", "nume4", "adresa4"));
+    public static void insertSomeClients() {
+        try {
+            ClientsDao.addClient(new ClientsDto("email@1.com", "parola1", "nume1", "adresa1"));
+            ClientsDao.addClient(new ClientsDto("email@2.com", "parola2", "nume2", "adresa2"));
+            ClientsDao.addClient(new ClientsDto("email@3.com", "parola3", "nume3", "adresa3"));
+            ClientsDao.addClient(new ClientsDto("email@4.com", "parola4", "nume4", "adresa4"));
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert initial clients!" + " " + e.getMessage());
+        }
     }
 
-    public static void insertProducts() throws SQLException {
-        ProductsDao.addProduct(new ProductsDto(1, PC, "MacBook Laptop", 25, 100));
-        ProductsDao.addProduct(new ProductsDto(2, GAMING, "Gaming Keyboard", 20, 100));
-        ProductsDao.addProduct(new ProductsDto(3, BOOKS, "Dune", 2, 100));
-        ProductsDao.addProduct(new ProductsDto(4, PHONES, "Iphone charger", 3, 100));
-        ProductsDao.addProduct(new ProductsDto(5, FASHION, "Black dress", 5, 100));
-        ProductsDao.addProduct(new ProductsDto(6, GARDEN, "Fake grass", 6, 100));
-        ProductsDao.addProduct(new ProductsDto(7, HOUSE, "Vacuum cleaner", 15, 100));
-        ProductsDao.addProduct(new ProductsDto(8, SPORT, "Tennis ball", 1, 100));
-        ProductsDao.addProduct(new ProductsDto(9, AUTO, "Car tier", 15, 100));
-        ProductsDao.addProduct(new ProductsDto(10, TOYS, "Doll", 3, 100));
-        ProductsDao.addProduct(new ProductsDto(11, COSMETICS, "Mascara", 8, 100));
+    public static void insertProducts() {
+        try {
+            ProductsDao.addProduct(new ProductsDto(1, PC, "MacBook Laptop", 25, 100));
+            ProductsDao.addProduct(new ProductsDto(2, GAMING, "Gaming Keyboard", 20, 100));
+            ProductsDao.addProduct(new ProductsDto(3, BOOKS, "Dune", 2, 100));
+            ProductsDao.addProduct(new ProductsDto(4, PHONES, "Iphone charger", 3, 100));
+            ProductsDao.addProduct(new ProductsDto(5, FASHION, "Black dress", 5, 100));
+            ProductsDao.addProduct(new ProductsDto(6, GARDEN, "Fake grass", 6, 100));
+            ProductsDao.addProduct(new ProductsDto(7, HOUSE, "Vacuum cleaner", 15, 100));
+            ProductsDao.addProduct(new ProductsDto(8, SPORT, "Tennis ball", 1, 100));
+            ProductsDao.addProduct(new ProductsDto(9, AUTO, "Car tier", 15, 100));
+            ProductsDao.addProduct(new ProductsDto(10, TOYS, "Doll", 3, 100));
+            ProductsDao.addProduct(new ProductsDto(11, COSMETICS, "Mascara", 8, 100));
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert products!" + " " + e.getMessage());
+        }
     }
 
-    public static void insertSomeOrders() throws SQLException {
-        OrdersDao.addOrder(new OrdersDto(1));
-        OrdersDao.addOrder(new OrdersDto(2));
-        OrdersDao.addOrder(new OrdersDto(3));
+    public static void insertSomeOrders() {
+        try {
+            OrdersDao.addOrder(new OrdersDto(1));
+            OrdersDao.addOrder(new OrdersDto(2));
+            OrdersDao.addOrder(new OrdersDto(3));
+        } catch (SQLException e) {
+            throw new RuntimeException(" Failed to insert orders!" + " " + e.getMessage());
+        }
     }
 
-    public static void insertSomeOrderItem() throws SQLException {
-        OrderItemDao.insertOrderItem(new OrderItemDto(1, 1, 1));
-        OrderItemDao.insertOrderItem(new OrderItemDto(1, 2, 1));
-        OrderItemDao.insertOrderItem(new OrderItemDto(2, 3, 2));
-        OrderItemDao.insertOrderItem(new OrderItemDto(3, 6, 3));
+    public static void insertSomeOrderItem() {
+        try {
+            OrderItemDao.insertOrderItem(new OrderItemDto(1, 1, 1));
+            OrderItemDao.insertOrderItem(new OrderItemDto(1, 2, 1));
+            OrderItemDao.insertOrderItem(new OrderItemDto(2, 3, 2));
+            OrderItemDao.insertOrderItem(new OrderItemDto(3, 6, 3));
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert order item!" + " " + e.getMessage());
+        }
     }
 }

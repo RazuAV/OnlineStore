@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Online Store-Register</title>
+  <link rel="stylesheet" type="text/css" href="register.css">
+</head>
+<body>
+<form method="post" style="align-self: center;">
+  <div class="welcomebox" >
+    <div class="cartimage">  <img class="cartimage" src="cartimage.png"></div>
+    <div class="info-text"> Please complete this form in order to register!</div>
+
+     #if($error)
+        <div class="error" >$error</div>
+        #end
+
+      <div class="emailPassword">
+    <div class="email">
+      <label >Email Address</label>
+      <div class="sec-2">
+        <input class="input" type="email" name="email"  placeholder="Username@gmail.com"/>
+      </div>
+    </div>
+    <div class="password">
+      <label >Password</label>
+      <div class="sec-2">
+        <input class="input" type="password" name="password" placeholder="············" minlength="4" maxlength="15" required/>
+        <ion-icon class="show-hide" name="eye-outline"></ion-icon>
+      </div>
+    </div>
+      </div>
+    <div class="nameAddress">
+      <div class="name">
+        <label >Name</label>
+        <div class="sec-2">
+          <input class="input" type="name" name="name"  placeholder="Your name"/>
+        </div>
+      </div>
+      <div class="address">
+        <label >Address</label>
+        <div class="address">
+          <input class="input" type="address" name="address"  placeholder="Your Address"  />
+        </div>
+      </div>
+    </div>
+    <button class="register" type="submit">Register</button>
+  </div>
+</form>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Online Store</title>
+  <link rel="stylesheet" type="text/css" href="login.css">
+</head>
+<body>
+<form method="post" style="align-self: center;">
+<div class="welcomebox" >
+<div class="cartimage">  <img class="cartimage" src="cartimage.png"></div>
+
+ #if($error)
+        <div class="error" >$error</div>
+        #end
+
+    <div class="email">
+        <label >Email Address</label>
+        <div class="sec-2">
+            <input class="username" type="email" name="email" value="$!email" placeholder="Username@gmail.com"/>
+        </div>
+    </div>
+    <div class="password">
+        <label >Password</label>
+        <div class="sec-2">
+            <input class="pas" type="password" name="password" value="$!password" placeholder="············"/>
+            <ion-icon class="show-hide" name="eye-outline"></ion-icon>
+        </div>
+    </div>
+            <button class="login" type="submit">Login</button>
+</form>
+    <div class="register"><button class="registerbtn" type="button" onclick="window.location.href='/registerpage'">Register</a></button></div>
+</div>
+</body>
+</html>

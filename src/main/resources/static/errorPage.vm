@@ -1,0 +1,22 @@
+<!-- A small generic error page (for handling unexpected exceptions) -->
+<html lang="en">
+<head>
+  <title>Error</title>
+  <link rel="stylesheet" type="text/css" href="/common.css">
+</head>
+
+<body>
+#parse("secure/header.vm")
+
+<div class="panel">
+  <div class="title error" style="margin-bottom:10px;"> Error</div>
+
+  An unexpected error occurred:
+
+  <p class="error"> $errorMsg </p>
+
+  <br>
+  <a href="/secure/notes"> Go to notes page </a>
+</div>
+</body>
+</html>

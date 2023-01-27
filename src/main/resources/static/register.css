@@ -1,0 +1,81 @@
+
+* {
+  font-family: "Poppins";
+}
+
+body {
+      display: flex;
+     justify-content: center;
+     align-items: center;
+     background-color: #dde5f4;
+     height: 100vh;
+}
+.emailPassword{
+display: flex;
+flex-direction: row;
+box-shadow: 0 0 2em #e6e9f9;
+    padding: 1em;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    border-radius: 20px;
+    color: #4d4d4d;
+    margin-top: -2em;
+}
+.nameAddress{
+display: flex;
+flex-direction: row;
+box-shadow: 0 0 2em #e6e9f9;
+    padding: 1em;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    border-radius: 20px;
+    color: #4d4d4d;
+    margin-top: 0.5em;
+}
+.nameAddress{
+display: flex;
+flex-direction: row;
+}
+.welcomebox {
+   background-color: #f1f7fe;
+     padding: 2em;
+     display: flex;
+     flex-direction: column;
+     border-radius: 30px;
+     box-shadow: 0 0 2em #e6e9f9;
+     color: #40715e;
+
+}
+
+.welcomebox .cartimage{
+      width: 100px;
+      height: 100px;
+      display: flex;
+      margin: -1em auto 0 auto;
+
+}
+.input{
+border:none;}
+
+.register{
+background-color: #7b9a7f;
+margin: 1em auto auto auto;
+border: none;
+border-radius: 30px;
+height: 50px;
+font-size: 20px;
+width: 300px;
+color: white;
+}
+
+.info-text{
+margin: auto auto 3em auto;
+}
+.error{
+color: red;
+margin-bottom: 4em;
+display: flex;
+align-self: center;
+}
