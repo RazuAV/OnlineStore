@@ -7,7 +7,6 @@ import wantsome.online_store.db.clients.ClientsDto;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static wantsome.project.OnlineStore.*;
 

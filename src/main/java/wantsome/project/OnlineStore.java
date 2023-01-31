@@ -24,6 +24,7 @@ public class OnlineStore {
     public static final String SECURE_PREFIX = "/secure";
     public static final String HOME_PAGE = SECURE_PREFIX + "/home";
     public static final String SHOP_PAGE = SECURE_PREFIX + "/shoppage";
+    public static final String SHOP_PAGE_DESC = SECURE_PREFIX + "/shoppage-cat";
     public static final String PROFILE_PAGE = SECURE_PREFIX + "/profilepage";
     public static final String CART_PAGE = SECURE_PREFIX + "/cartpage";
     private static final Logger logger = LoggerFactory.getLogger(OnlineStore.class);
@@ -47,12 +48,11 @@ public class OnlineStore {
                 .post(LOGIN_PAGE, UsersController::handleLoginRequest)
                 .get(REGISTER_PAGE, UsersController::showRegisterPage)
                 .post(REGISTER_PAGE, UsersController::handleRegisterRequest)
-                .get(SHOP_PAGE, ShopController::shopWithAllCat)
-                .post(SHOP_PAGE, ShopController::handleByCategories)
+                .get(SHOP_PAGE, ShopController::showShopPage)
+                .post(SHOP_PAGE, ShopController::handleSearchRequests)
                 .start();
 
         logger.info("Server has started!");
     }
-
 
 }
