@@ -3,6 +3,7 @@ package wantsome.online_store.web.controllers.ShopController;
 import io.javalin.http.Context;
 import wantsome.online_store.db.products.ProductType;
 import wantsome.online_store.db.products.ProductsDao;
+import wantsome.online_store.db.products.ProductsDto;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -27,7 +28,10 @@ public class ShopController {
         try {
 
             if (description != null && !description.isEmpty()) {
-                model.put("listItems", ProductsDao.getProductsByDescription(description));
+                List<ProductsDto> products = new ArrayList<>();
+                Optional<ProductsDto> productsDtoOptional = ProductsDao.getProductsByDescription(description);
+                productsDtoOptional.ifPresent(products::add);
+                model.put("listItems", products);
             }
 
             else if (category != null && !category.equals("None")) {

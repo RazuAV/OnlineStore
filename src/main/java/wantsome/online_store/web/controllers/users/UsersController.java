@@ -7,6 +7,7 @@ import wantsome.online_store.db.clients.ClientsDto;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static wantsome.project.OnlineStore.*;
 
@@ -31,12 +32,16 @@ public class UsersController {
         String password = ctx.formParam("password");
 
         boolean isValidUser = ClientsDao.clientLogin(email, password);
-
-        if (isValidUser) {
-            ctx.sessionAttribute("currentUser", email); //save user on session
-            ctx.redirect(HOME_PAGE);
-        } else {
-            renderLoginPage(ctx, email, "Invalid email or password!");
+        try {
+            if (isValidUser) {
+                ctx.sessionAttribute("currentUserEmail", email);
+                ctx.sessionAttribute("currentUser", ClientsDao.getClientsByEmail(email).get().getName());//save user on session
+                ctx.redirect(HOME_PAGE);
+            } else {
+                renderLoginPage(ctx, email, "Invalid email or password!");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Unable to get client name!" + " " + e.getMessage());
         }
     }
 
@@ -71,12 +76,24 @@ public class UsersController {
         boolean succesfulyRegistered = ClientsDao.addClient(new ClientsDto(email, password, name, address));
 
         if (succesfulyRegistered) {
-            ctx.sessionAttribute("currentUser", email); //save user on session
+            ctx.sessionAttribute("currentUserEmail", email);
+            ctx.sessionAttribute("currentUser", name);//save user on session
             ctx.redirect(LOGIN_PAGE);
         } else {
             renderRegisterPage(ctx, email, "This email is already registered!");
         }
     }
 
-
+    public static void addUserInfoToModel(Context ctx, Map<String, Object> model) {
+        model.put("currentUser", ctx.sessionAttribute("currentUser"));
+    }
+    public static Integer getCurrentClientId(Context ctx) {
+        String currentUserEmail = ctx.sessionAttribute("currentUserEmail");
+        try {
+            Optional<ClientsDto> client = ClientsDao.getClientsByEmail(currentUserEmail);
+            return client.map(ClientsDto::getId).orElse(null);
+        } catch (SQLException e) {
+            throw new RuntimeException("Unable to get client id!" + " " + e.getMessage());
+        }
+    }
 }

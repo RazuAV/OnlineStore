@@ -44,10 +44,13 @@ public class DatabaseManager {
             "totalPrice DOUBLE);";
 
 
-    private static final String CREATE_orderItem_SQL = "CREATE TABLE orderItem(" +
+    private static final String CREATE_orderItem_SQL = "CREATE TABLE IF NOT EXISTS orderItem(" +
             "id INTEGER primary key AUTOINCREMENT," +
             "orderId INTEGER references orders(id)," +
             "productId INTEGER references products(id)," +
+            "productType TEXT  NOT NULL,\n" +
+            "productDescription TEXT NOT NULL ," +
+            "productPrice DOUBLE NOT NULL," +
             "quantity INTEGER);";
 
     private static void createMissingTables() {
@@ -67,10 +70,13 @@ public class DatabaseManager {
 
     public static void createDatabase() {
         createMissingTables();
+        try{
+        if(ProductsDao.getAllProducts().isEmpty()){
         insertSomeClients();
         insertProducts();
-        insertSomeOrders();
-        insertSomeOrderItem();
+        }}catch (SQLException e){
+            throw new RuntimeException("Error inserting samples for clients or products " + " " + e.getMessage());
+        }
     }
 
 
@@ -106,24 +112,7 @@ public class DatabaseManager {
         }
     }
 
-    public static void insertSomeOrders() {
-        try {
-            OrdersDao.addOrder(new OrdersDto(1));
-            OrdersDao.addOrder(new OrdersDto(2));
-            OrdersDao.addOrder(new OrdersDto(3));
-        } catch (SQLException e) {
-            throw new RuntimeException(" Failed to insert orders!" + " " + e.getMessage());
-        }
-    }
 
-    public static void insertSomeOrderItem() {
-        try {
-            OrderItemDao.insertOrderItem(new OrderItemDto(1, 1, 1));
-            OrderItemDao.insertOrderItem(new OrderItemDto(1, 2, 1));
-            OrderItemDao.insertOrderItem(new OrderItemDto(2, 3, 2));
-            OrderItemDao.insertOrderItem(new OrderItemDto(3, 6, 3));
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to insert order item!" + " " + e.getMessage());
-        }
-    }
+
+
 }

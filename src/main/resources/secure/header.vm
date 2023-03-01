@@ -7,5 +7,9 @@
 
 
 
-        <button type="button" class="menu-item" #if($page == 'cart') menu-item #end" onclick="location.href='/secure/cart'"><h2>Cart</h2>  </button>
+        <button type="button" class="menu-item" #if($page == 'cart') menu-item #end" onclick="location.href='/secure/cartpage'"><h2>Cart</h2>  </button>
+
+    #if($currentUser)
+            <b style="color: gray; margin-left: 15px;" title="Current user">$currentUser</b>
+            #end
     </div>

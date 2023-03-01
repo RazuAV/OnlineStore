@@ -42,7 +42,8 @@ public class OrdersDao {
      * Get current orders for  client
      * Current orders are those which don't have a fulfilled date;
      */
-    public static List<OrdersDto> getCurrentForClient(int clientId) throws SQLException {
+    public static Optional<OrdersDto> getCurrentForClient(int clientId) throws SQLException {
+        Optional<OrdersDto> ordersDtoOptional = Optional.empty();
         String sql = "SELECT orders.id,clientId,fullFillDate,totalPrice" +
                 " FROM orders,clients WHERE orders.clientId = clients.id " +
                 "AND clients.id = ? AND fullFillDate IS NULL;";
@@ -52,8 +53,6 @@ public class OrdersDao {
             ps.setInt(1, clientId);
 
             try (ResultSet ordersData = ps.executeQuery()) {
-                List<OrdersDto> currentOrdersForClient = new ArrayList<>();
-
                 while (ordersData.next()) {
                     OrdersDto ordersDto = new OrdersDto(
                             ordersData.getInt("id"),
@@ -61,9 +60,9 @@ public class OrdersDao {
                             ordersData.getDate("fullFillDate"),
                             ordersData.getDouble("totalPrice")
                     );
-                    currentOrdersForClient.add(ordersDto);
+                    ordersDtoOptional = Optional.of(ordersDto);
                 }
-                return currentOrdersForClient;
+                return ordersDtoOptional;
             }
         } catch (SQLException e) {
             throw new RuntimeException("No orders for this clientId!" + " " + e.getMessage());
@@ -85,6 +84,7 @@ public class OrdersDao {
             ps.setDouble(4, order.gettotalPrice());
             ps.executeUpdate();
             return true;
+
         } catch (SQLException e) {
             throw new RuntimeException("Failed to insert new order!" + " " + e.getMessage());
         }

@@ -164,18 +164,26 @@ public class ProductsDao {
      * This is done by verifying the orderItem in database, and if some products are ordered, the stock is updated by extracting the
      * total products ordered from the iniliam stock ammount.
      */
-    public static boolean updateStock(int id) throws SQLException {
+    public static boolean updateStock(int id, int stock) throws SQLException {
         Optional<ProductsDto> searchByProductId = getProductsById(id);
 
         if (searchByProductId.isEmpty()) {
             System.out.println("Product with this ID was not found!");
             return false;
         }
-        String sql = "UPDATE products SET stock = stock - (SELECT quantity FROM orderItem WHERE productId = products.id) WHERE id = (SELECT productId FROM orderItem) AND id = ?";
+        int updatedStock = searchByProductId.get().getStock();
+        if (stock < 0) {
+            updatedStock++;
+        } else if (stock > 0) {
+            updatedStock--;
+        }
+
+        String sql = "UPDATE products SET stock = ? WHERE id =  ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setInt(1, updatedStock);
+            ps.setInt(2, id);
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {

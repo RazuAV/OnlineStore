@@ -1,17 +1,16 @@
 package wantsome.project;
 
 import io.javalin.Javalin;
-import io.javalin.http.Context;
 import io.javalin.rendering.template.JavalinVelocity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wantsome.online_store.db.service.DatabaseManager;
 import wantsome.online_store.web.controllers.ShopController.ShopController;
+import wantsome.online_store.web.controllers.cart.CartController;
 import wantsome.online_store.web.controllers.users.UsersController;
 import wantsome.online_store.web.controllers.home.HomeController;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+
 
 /**
  * Example of main class for a web application (using Javalin framework)
@@ -27,12 +26,13 @@ public class OnlineStore {
     public static final String SHOP_PAGE_DESC = SECURE_PREFIX + "/shoppage-cat";
     public static final String PROFILE_PAGE = SECURE_PREFIX + "/profilepage";
     public static final String CART_PAGE = SECURE_PREFIX + "/cartpage";
+    public static final String CART_PAGE_DELETE = CART_PAGE + "/delete";
     private static final Logger logger = LoggerFactory.getLogger(OnlineStore.class);
 
     public static final String DEFAULT_PAGE = HOME_PAGE;
 
     public static void main(String[] args) {
-        //      DatabaseManager.createDatabase();
+         DatabaseManager.createDatabase();
 
         JavalinVelocity.init(null); //enable the Velocity rendering engine (to recognize .vm files)
         Javalin.create(config -> {
@@ -50,6 +50,9 @@ public class OnlineStore {
                 .post(REGISTER_PAGE, UsersController::handleRegisterRequest)
                 .get(SHOP_PAGE, ShopController::showShopPage)
                 .post(SHOP_PAGE, ShopController::handleSearchRequests)
+                .get(CART_PAGE, CartController::showCartPage)
+                .post(CART_PAGE,CartController::addProductToCart)
+                .get(CART_PAGE_DELETE, CartController::deleteProductFromCart)
                 .start();
 
         logger.info("Server has started!");
