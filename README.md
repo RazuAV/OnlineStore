@@ -1,35 +1,18 @@
-## Wantsome - Project X
-
-- _This is a __template__ for the final project at the end of Java course. It's
-  just a basic working gradle project, with common libraries included._
-
-- ___IMPORTANT__: after you finish your project, you should replace this content
-  with something more relevant for your specific project._
-
-  _It should contain:_
-    - _short description, the __purpose and scope__ of your project_
-    - ___initial setup instructions__ (init db, others?)_
-    - ___usage instructions___
-    - _interesting __technical details__ about how you built it (technologies
-      used, db structure, code organization, etc.)_
-    - _ideas for further improvements (possible new features)_
-
-  _For nicer formatting you may using __MarkDown syntax__, see guide:
-  <https://guides.github.com/features/mastering-markdown>_
-
-_Structure example:_
+## Wantsome - Project OnlineStore
 
 ---
 
 ### 1. Description
 
-Project description here...
+This is an application that I am still working on, that manages the backend of an OnlineStore. I started to work on this project during my Java Course at Wantsome Academy and the purpose of this project is to create an Online Store app which has features like register/login, searching for products, adding products to cart, checkout for current order with options for payment like cash or card, listing orders for clients and also showing informations about sales, products etc.
+
+For the moment, only register/login/search for products and delete features exist, interacting with db aswell.
 
 ---
 
 ### 2. Setup
 
-How to configure/run it...
+In order to start the application, you have to run the OnlineStore class from src/main/java/project. You also have to edit the ConnectionManager class in order to set up your path for the db. When the application runs, it will also create the database(if does not exist) which consists of 4 tables(clients, products, orders and orderItems) and will also insert some data in clients and products tables. 
 
 ---
 
@@ -44,15 +27,12 @@ __Technologies__
   an embedded web server, Jetty)
 - it uses [Velocity](https://velocity.apache.org/) templating engine,
   to separate the UI code from Java code; UI code consists of basic HTML and CSS
-  code (and some Javascript)
-- _others...? (junit, google charts, etc.)_
+  code. Used Bootstrap aswell. 
 
-__Other sections...__
-
-Details on UI, code structure, tests...
 
 ---
 
 ### 4. Future plans
 
-Ideas for future improvement/features...
+The project its not finished yet, I am still working on increasing/decreasing quantity for products from cart, checkout, page with client personal details and also their orders, log out option etc.
+I will also change the clients concept to a general one(Users) so that ones can be clients and others to be administrators(which will have features like delete orders, inserting new products etc.)
