@@ -27,6 +27,7 @@ public class OnlineStore {
     public static final String PROFILE_PAGE = SECURE_PREFIX + "/profilepage";
     public static final String CART_PAGE = SECURE_PREFIX + "/cartpage";
     public static final String CART_PAGE_DELETE = CART_PAGE + "/delete";
+    public static final String CART_PAGE_UPDATE = CART_PAGE + "/update";
     private static final Logger logger = LoggerFactory.getLogger(OnlineStore.class);
 
     public static final String DEFAULT_PAGE = HOME_PAGE;
@@ -53,6 +54,8 @@ public class OnlineStore {
                 .get(CART_PAGE, CartController::showCartPage)
                 .post(CART_PAGE,CartController::addProductToCart)
                 .get(CART_PAGE_DELETE, CartController::deleteProductFromCart)
+                .post(CART_PAGE_UPDATE, CartController::updateQuantityForAnOrderedItem)
+
                 .start();
 
         logger.info("Server has started!");

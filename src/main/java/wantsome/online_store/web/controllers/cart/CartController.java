@@ -2,6 +2,7 @@ package wantsome.online_store.web.controllers.cart;
 
 import io.javalin.http.Context;
 import wantsome.online_store.cart.CartClass;
+import wantsome.online_store.db.orderItem.OrderItemDao;
 import wantsome.online_store.db.orderItem.OrderItemDto;
 import wantsome.online_store.db.orders.OrdersDao;
 import wantsome.online_store.db.orders.OrdersDto;
@@ -24,7 +25,7 @@ public class CartController {
 
         int orderId = getCurrentOrderId(ctx);
         CartClass.setOrderId(orderId);
-        if(!checkIfOrderIsNotClosed(ctx,orderId)){
+        if (!checkIfOrderIsNotClosed(ctx, orderId)) {
             CartClass.getListForExistingOrder(orderId);
         }
         List<OrderItemDto> orderItems = CartClass.getOrderItemsList();
@@ -40,60 +41,78 @@ public class CartController {
     public static void addProductToCart(Context ctx) {
         int clientId = UsersController.getCurrentClientId(ctx);
         int productId = Integer.parseInt(ctx.formParam("productId"));
-        CartClass.addOrderItemToList(clientId,productId,1);
+        CartClass.addOrderItemToList(clientId, productId, 1);
         CartClass.updateTotalPrice(CartClass.getOrderItemsList());
-       try {
-           ProductsDao.updateStock(productId,1);
-       }catch (SQLException e ){
-           throw new RuntimeException("Error updating stock");
-       }
-       ctx.render("/secure/shoppage.vm");
+        try {
+            ProductsDao.updateStock(productId, 1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating stock");
+        }
+        ctx.render("/secure/shoppage.vm");
 
 
     }
 
-    public static int getCurrentOrderId(Context ctx){
-       try {
-           Optional<OrdersDto> ordersDtoOptional = OrdersDao.getCurrentForClient(UsersController.getCurrentClientId(ctx));
-           if(ordersDtoOptional.isPresent()){
-           int orderId = ordersDtoOptional.get().getId();
-           return orderId;
-           }else {
-             OrdersDto ordersDto = new OrdersDto(UsersController.getCurrentClientId(ctx));
-             int orderId = ordersDto.getId();
-           return orderId;
-           }
+    public static int getCurrentOrderId(Context ctx) {
+        try {
+            Optional<OrdersDto> ordersDtoOptional = OrdersDao.getCurrentForClient(UsersController.getCurrentClientId(ctx));
+            if (ordersDtoOptional.isPresent()) {
+                int orderId = ordersDtoOptional.get().getId();
+                return orderId;
+            } else {
+                OrdersDto ordersDto = new OrdersDto(UsersController.getCurrentClientId(ctx));
+                int orderId = ordersDto.getId();
+                return orderId;
+            }
 
-       }catch (SQLException e ){
-           throw new RuntimeException("Failed to get currentOrderId" + " " + e.getMessage());
-       }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get currentOrderId" + " " + e.getMessage());
+        }
     }
 
-    public static boolean checkIfOrderIsNotClosed(Context ctx, int orderId){
-        try{
+    public static boolean checkIfOrderIsNotClosed(Context ctx, int orderId) {
+        try {
             boolean isClosed = false;
             int clientId = UsersController.getCurrentClientId(ctx);
-        List<OrdersDto> ordersDtoList = OrdersDao.getallClosedByClientId(clientId);
-        for(OrdersDto order: ordersDtoList){
-            if(order.getId() == orderId){
-                isClosed = true;
+            List<OrdersDto> ordersDtoList = OrdersDao.getallClosedByClientId(clientId);
+            for (OrdersDto order : ordersDtoList) {
+                if (order.getId() == orderId) {
+                    isClosed = true;
+                }
             }
-        }
-        return isClosed;
-    }catch (SQLException e){
+            return isClosed;
+        } catch (SQLException e) {
             throw new RuntimeException("Error at checking  if order is not closed" + e.getMessage());
         }
     }
 
-    public static void deleteProductFromCart(Context ctx){
+    public static void deleteProductFromCart(Context ctx) {
         int orderId = getCurrentOrderId(ctx);
         int productId = ctx.queryParamAsClass("id", Integer.class).get();
-        CartClass.removeProductFromCart(orderId,productId);
+        CartClass.removeProductFromCart(orderId, productId);
         try {
-            ProductsDao.updateStock(productId,-1);
-        }catch (SQLException e ){
+            ProductsDao.updateStock(productId, -1);
+        } catch (SQLException e) {
             throw new RuntimeException("Error updating stock" + e.getMessage());
         }
         ctx.redirect(OnlineStore.CART_PAGE);
     }
+
+    public static void updateQuantityForAnOrderedItem(Context ctx) {
+        int productId = Integer.parseInt(ctx.formParam("productId"));
+        int orderId = Integer.parseInt(ctx.formParam("orderId"));
+        int quantity = Integer.parseInt(ctx.formParam("quantity"));
+        try {
+            int actualQuantity = OrderItemDao.getOrderItemByOrderAndId(productId, orderId).get().getQuantity();
+            if (actualQuantity >= 1) {
+                if (OrderItemDao.updateQuantity(orderId, productId, quantity)) {
+                    ProductsDao.updateStock(productId, quantity);
+                    ctx.redirect(OnlineStore.CART_PAGE);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating quantity " + " " + e.getMessage());
+        }
+    }
+
 }
