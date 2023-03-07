@@ -122,14 +122,20 @@ public class OrderItemDao {
     public static boolean updateQuantity(int orderId, int productId, int quantity) throws SQLException {
 
         String sql = "UPDATE orderItem SET quantity = ? WHERE productId = ? AND orderId = ?";
-
+        int updatedQuantity = OrderItemDao.getOrderItemByOrderAndId(productId, orderId).get().getQuantity();
+        if (quantity > 0) {
+            updatedQuantity++;
+        } else {
+            updatedQuantity--;
+        }
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, quantity);
+            ps.setInt(1, updatedQuantity);
             ps.setInt(2, productId);
             ps.setInt(3, orderId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
+            System.out.println("Error executing SQL update statement: " + e.getMessage());
             throw new RuntimeException("Error updating quantity for item with product id: " + productId + " " + e.getMessage());
         }
     }

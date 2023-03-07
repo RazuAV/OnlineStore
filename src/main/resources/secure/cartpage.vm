@@ -46,7 +46,13 @@
      <td>$orderItem.getProductType().name()</td>
      <td>$orderItem.getProductDescription()</td>
      <td>$orderItem.getProductPrice()</td>
-     <td>$orderItem.getQuantity()</td>
+     <td> <form action="/secure/cartpage/update"  method="POST">
+                   <input type="hidden" name="productId" value="$orderItem.getProductId()">
+                   <input type="hidden" name="orderId" value="$orderItem.getOrderId()">
+                   <button type="submit" name="quantity" value="-1">-</button>
+                   $orderItem.getQuantity()
+                   <button type="submit" name="quantity" value="1">+</button>
+                 </form></td>
      <td>
              <button type="button" title="Delete" onclick="location.href='cartpage/delete?id=$orderItem.getProductId()'">Delete</button>
      </td>
