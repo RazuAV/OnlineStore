@@ -87,6 +87,7 @@ public class UsersController {
     public static void addUserInfoToModel(Context ctx, Map<String, Object> model) {
         model.put("currentUser", ctx.sessionAttribute("currentUser"));
     }
+
     public static Integer getCurrentClientId(Context ctx) {
         String currentUserEmail = ctx.sessionAttribute("currentUserEmail");
         try {

@@ -2,7 +2,7 @@ package wantsome.online_store.db.orderItem;
 
 
 import wantsome.online_store.db.products.ProductType;
-import wantsome.online_store.db.products.ProductsDto;
+
 
 import java.util.Objects;
 
@@ -24,6 +24,7 @@ public class OrderItemDto {
         this.productPrice = productPrice;
         this.quantity = quantity;
     }
+
     public OrderItemDto(int orderId, int productId, ProductType productType, String productDescription, double productPrice, int quantity) {
         this.id = id;
         this.orderId = orderId;
