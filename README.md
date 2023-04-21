@@ -4,9 +4,7 @@
 
 ### 1. Description
 
-This is an application that I am still working on, that manages the backend of an OnlineStore. I started to work on this project during my Java Course at Wantsome Academy and the purpose of this project is to create an Online Store app which has features like register/login, searching for products, adding products to cart, checkout for current order with options for payment like cash or card, listing orders for clients and also showing informations about sales, products etc.
-
-For the moment, only register/login/search for products and delete features exist, interacting with db aswell.
+This is an application that I am still working on, that manages the backend of an OnlineStore. I started to work on this project during my Java Course at Wantsome Academy and the purpose of this project is to create an Online Store app which has features like register/login, searching for products, adding products to cart, checkout for current order with options for payment like cash or card, listing orders for clients.
 
 ---
 
@@ -32,7 +30,6 @@ __Technologies__
 
 ---
 
-### 4. Future plans
 
-The project its not finished yet, I am still working on increasing/decreasing quantity for products from cart, checkout, page with client personal details and also their orders, log out option etc.
-I will also change the clients concept to a general one(Users) so that ones can be clients and others to be administrators(which will have features like delete orders, inserting new products etc.)
+
+
