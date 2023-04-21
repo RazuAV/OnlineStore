@@ -7,6 +7,7 @@ import wantsome.online_store.db.orderItem.OrderItemDto;
 import wantsome.online_store.db.orders.OrdersDao;
 import wantsome.online_store.db.orders.OrdersDto;
 import wantsome.online_store.db.products.ProductsDao;
+import wantsome.online_store.web.controllers.ShopController.ShopController;
 import wantsome.online_store.web.controllers.users.UsersController;
 import wantsome.project.OnlineStore;
 
@@ -38,6 +39,33 @@ public class CartController {
 
     }
 
+    public static void handleCheckOut(Context ctx) {
+
+        String option = ctx.formParam("option");
+
+        if (option.equals("cash")) {
+            try {
+                OrdersDao.closeOrder(getCurrentOrderId(ctx));
+                renderCheckOut(ctx, "Your order has been placed.");
+            } catch (SQLException exception) {
+                throw new RuntimeException("Failed to close order!" + exception.getMessage());
+            }
+        }
+        if (option.equals("card")) {
+            ctx.render("/secure/cardpayment.vm");
+        }
+    }
+
+    public static void showCheckOut(Context ctx) {
+        renderCheckOut(ctx, null);
+    }
+
+    public static void renderCheckOut(Context ctx, String message) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("message", message);
+        ctx.render("/secure/checkout.vm", model);
+    }
+
     public static void addProductToCart(Context ctx) {
         int clientId = UsersController.getCurrentClientId(ctx);
         int productId = Integer.parseInt(ctx.formParam("productId"));
@@ -49,6 +77,7 @@ public class CartController {
             throw new RuntimeException("Error updating stock");
         }
         ctx.render("/secure/shoppage.vm");
+        ShopController.handleSearchRequests(ctx);
 
 
     }

@@ -63,10 +63,12 @@
         #end
         </tbody>
       </table>
-
+        <div>
+            <button onclick="location.href='/secure/checkout'"> Checkout!</button>
+        </div>
+    </div>
     </div>
 
-  </div>
 </div>
 </body>
 </html>

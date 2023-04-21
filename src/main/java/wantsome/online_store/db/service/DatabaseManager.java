@@ -2,10 +2,6 @@ package wantsome.online_store.db.service;
 
 import wantsome.online_store.db.clients.ClientsDao;
 import wantsome.online_store.db.clients.ClientsDto;
-import wantsome.online_store.db.orderItem.OrderItemDao;
-import wantsome.online_store.db.orderItem.OrderItemDto;
-import wantsome.online_store.db.orders.OrdersDao;
-import wantsome.online_store.db.orders.OrdersDto;
 import wantsome.online_store.db.products.ProductsDao;
 import wantsome.online_store.db.products.ProductsDto;
 
@@ -70,11 +66,12 @@ public class DatabaseManager {
 
     public static void createDatabase() {
         createMissingTables();
-        try{
-        if(ProductsDao.getAllProducts().isEmpty()){
-        insertSomeClients();
-        insertProducts();
-        }}catch (SQLException e){
+        try {
+            if (ProductsDao.getAllProducts().isEmpty()) {
+                insertSomeClients();
+                insertProducts();
+            }
+        } catch (SQLException e) {
             throw new RuntimeException("Error inserting samples for clients or products " + " " + e.getMessage());
         }
     }
@@ -111,8 +108,6 @@ public class DatabaseManager {
             throw new RuntimeException("Failed to insert products!" + " " + e.getMessage());
         }
     }
-
-
 
 
 }

@@ -47,7 +47,6 @@ public class CartClass {
 // adding a product to the cart
 
 
-
     public static void addOrderItemToList(int clientId, int productId, int quantity) {
         try {
             Optional<OrdersDto> ordersDtoOptional = OrdersDao.getCurrentForClient(clientId);
@@ -78,13 +77,13 @@ public class CartClass {
     }
 
     private static OrdersDto createNewOrder(int clientId) {
-        try{
-        if (!OrdersDao.addOrder(new OrdersDto(clientId))) {
-            throw new RuntimeException("Failed to create new order");
-        }
+        try {
+            if (!OrdersDao.addOrder(new OrdersDto(clientId))) {
+                throw new RuntimeException("Failed to create new order");
+            }
 
-        return OrdersDao.getCurrentForClient(clientId).orElseThrow(() -> new RuntimeException("Order not found"));
-    }catch (SQLException e){
+            return OrdersDao.getCurrentForClient(clientId).orElseThrow(() -> new RuntimeException("Order not found"));
+        } catch (SQLException e) {
             throw new RuntimeException("Failed to create new order" + e.getMessage());
         }
     }
@@ -93,28 +92,28 @@ public class CartClass {
         return orderItems.stream().anyMatch(item -> item.getProductId() == productId);
     }
 
-    public static void updateTotalPrice( List<OrderItemDto> orderItemsList){
+    public static void updateTotalPrice(List<OrderItemDto> orderItemsList) {
 
         double price = 0;
-        for(OrderItemDto orderItemDto: orderItemsList){
-           price += orderItemDto.getProductPrice() * orderItemDto.getQuantity();
+        for (OrderItemDto orderItemDto : orderItemsList) {
+            price += orderItemDto.getProductPrice() * orderItemDto.getQuantity();
         }
-       setTotalPrice(price);
+        setTotalPrice(price);
     }
 
-    public static void getListForExistingOrder(int orderId){
+    public static void getListForExistingOrder(int orderId) {
 
-            List<OrderItemDto> orderItemDtoList = OrderItemDao.getAllItemsOrderedForASpecificOrderId(orderId);
-            CartClass.setOrderItemsList(orderItemDtoList);
+        List<OrderItemDto> orderItemDtoList = OrderItemDao.getAllItemsOrderedForASpecificOrderId(orderId);
+        CartClass.setOrderItemsList(orderItemDtoList);
 
     }
 
-    public static void removeProductFromCart(int orderId,int productId){
-       List<OrderItemDto> orderItemDtoListCopy = new ArrayList<>(orderItemsList);
-        for(OrderItemDto orderItemDto: orderItemDtoListCopy){
-            if(orderItemDto.getOrderId()==orderId && orderItemDto.getProductId()==productId){
+    public static void removeProductFromCart(int orderId, int productId) {
+        List<OrderItemDto> orderItemDtoListCopy = new ArrayList<>(orderItemsList);
+        for (OrderItemDto orderItemDto : orderItemDtoListCopy) {
+            if (orderItemDto.getOrderId() == orderId && orderItemDto.getProductId() == productId) {
                 orderItemsList.remove(orderItemDto);
-                OrderItemDao.deleteItem(productId,orderId);
+                OrderItemDao.deleteItem(productId, orderId);
             }
         }
     }

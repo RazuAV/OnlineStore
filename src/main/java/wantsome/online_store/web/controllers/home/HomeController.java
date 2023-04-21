@@ -10,7 +10,7 @@ public class HomeController {
 
     public static void showHomePage(Context ctx) {
         Map<String, Object> model = new HashMap<>();
-        UsersController.addUserInfoToModel(ctx,model);
+        UsersController.addUserInfoToModel(ctx, model);
         ctx.render("/secure/home.vm", model);
     }
 }

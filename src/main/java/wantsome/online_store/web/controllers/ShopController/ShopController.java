@@ -32,13 +32,9 @@ public class ShopController {
                 Optional<ProductsDto> productsDtoOptional = ProductsDao.getProductsByDescription(description);
                 productsDtoOptional.ifPresent(products::add);
                 model.put("listItems", products);
-            }
-
-            else if (category != null && !category.equals("None")) {
+            } else if (category != null && !category.equals("All")) {
                 model.put("listItems", ProductsDao.getProductsByProductType(ProductType.valueOf(category)));
-            }
-
-            else {
+            } else {
                 model.put("listItems", ProductsDao.getAllProducts());
             }
             model.put("category", category);
